@@ -225,7 +225,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Diff_EfficientArrayDiffSameLengthNested_ValidDiff()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>() });
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj,index) => jObj["Id"].Value<string>() });
 			var left = JToken.Parse(@"[1,2,{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false},4]");
 			var right = JToken.Parse(@"[1,2,{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":true},4]");
 
@@ -239,7 +239,7 @@ namespace JsonDiffPatchDotNet.UnitTests
         [Test]
         public void Diff_EfficientArrayDiffWithComplexObject_ValidDiff()
         {
-            var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>() });
+            var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj, index) => jObj["Id"].Value<string>() });
             //var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient });
             var left = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":false}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC9"", ""p"":true}]");
             var right = JToken.Parse(@"[{""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC8"", ""p"":true}, {""Id"" : ""F12B21EF-F57D-4958-ADDC-A3F52EC25EC10"", ""p"":false}]");
@@ -253,7 +253,7 @@ namespace JsonDiffPatchDotNet.UnitTests
 		[Test]
 		public void Diff_EfficientArrayDiffWithComplexObjectHash_ValidDiff()
 		{
-			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj) => jObj["Id"].Value<string>() });
+			var jdp = new JsonDiffPatch(new Options { ArrayDiff = ArrayDiffMode.Efficient, ObjectHash = (jObj, index) => jObj["Id"].Value<string>() });
 			var left = JToken.Parse(@"[{""Id"": ""22ff56c7-2307-414b-8a3a-9bf1cdba2095"",""city"":""São Paulo""},{""Id"":""3fca9cdb-dd9b-4b7c-afc1-587751e25bd6"",""city"":""abc""},{""Id"":""1fe6a0f9-3974-427f-81cb-6004748cb179"",""city"":""xyz""}]");
 			var right = JToken.Parse(@"[{""Id"":""3fca9cdb-dd9b-4b7c-afc1-587751e25bd6"",""city"":""abc""},{""Id"":""1fe6a0f9-3974-427f-81cb-6004748cb179"",""city"":""xyz""}, {""Id"":""3fca9cdb-dd9b-4b7c-afc1-587751e25b44"",""city"":""new""}]");
 

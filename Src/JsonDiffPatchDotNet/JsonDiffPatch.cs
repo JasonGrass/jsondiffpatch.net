@@ -38,11 +38,11 @@ namespace JsonDiffPatchDotNet
 		/// <returns>JSON Patch Document</returns>
 		public JToken Diff(JToken left, JToken right)
 		{
-		    
-		    var objectHash = this._options.ObjectHash;
-            var itemMatch = new DefaultItemMatch(objectHash);
-		
-		
+
+			var objectHash = this._options.ObjectHash;
+			var itemMatch = new DefaultItemMatch(objectHash);
+
+
 			if (left == null)
 				left = new JValue("");
 			if (right == null)
@@ -69,13 +69,13 @@ namespace JsonDiffPatchDotNet
 				List<Patch> patches = dmp.patch_make(left.ToObject<string>(), right.ToObject<string>());
 				return patches.Any()
 					? new JArray(dmp.patch_toText(patches), 0, (int)DiffOperation.TextDiff)
-					: null;
+				: null;
 			}
 
-			if (!itemMatch.Match(left, right))
+			if (!JToken.DeepEquals(left, right))
 			{
 				return new JArray(left, right);
-			}				
+			}
 
 			return null;
 		}
@@ -113,17 +113,17 @@ namespace JsonDiffPatchDotNet
 			{
 				var patchArray = (JArray)patch;
 
-				if (patchArray.Count == 1)	// Add
+				if (patchArray.Count == 1)  // Add
 				{
 					return patchArray[0];
 				}
 
-				if (patchArray.Count == 2)	// Replace
+				if (patchArray.Count == 2)  // Replace
 				{
 					return patchArray[1];
 				}
 
-				if (patchArray.Count == 3)	// Delete, Move or TextDiff
+				if (patchArray.Count == 3)  // Delete, Move or TextDiff
 				{
 					if (patchArray[2].Type != JTokenType.Integer)
 						throw new InvalidDataException("Invalid patch object");
@@ -197,17 +197,17 @@ namespace JsonDiffPatchDotNet
 			{
 				var patchArray = (JArray)patch;
 
-				if (patchArray.Count == 1)	// Add (we need to remove the property)
+				if (patchArray.Count == 1)  // Add (we need to remove the property)
 				{
 					return null;
 				}
 
-				if (patchArray.Count == 2)	// Replace
+				if (patchArray.Count == 2)  // Replace
 				{
 					return patchArray[0];
 				}
 
-				if (patchArray.Count == 3)	// Delete, Move or TextDiff
+				if (patchArray.Count == 3)  // Delete, Move or TextDiff
 				{
 					if (patchArray[2].Type != JTokenType.Integer)
 						throw new InvalidDataException("Invalid patch object");
@@ -376,116 +376,118 @@ namespace JsonDiffPatchDotNet
 		}
 
 		private JObject ArrayDiff(JArray left, JArray right)
-        {
-            var objectHash = this._options.ObjectHash;
-            var itemMatch = new DefaultItemMatch(objectHash);
-            var result = JObject.Parse(@"{ ""_t"": ""a"" }");
+		{
+			var objectHash = this._options.ObjectHash;
+			var itemMatch = new DefaultItemMatch(objectHash);
+			var result = JObject.Parse(@"{ ""_t"": ""a"" }");
 
-            int commonHead = 0;
-            int commonTail = 0;
+			int commonHead = 0;
+			int commonTail = 0;
 
 			if (JToken.DeepEquals(left, right))
 				return null;
 
-            var childContext = new List<JToken>();
+			var childContext = new List<JToken>();
 
-            // Find common head
-            while (commonHead < left.Count
-                && commonHead < right.Count
-                && itemMatch.Match(left[commonHead], right[commonHead]))
-            {
-                var index = commonHead;
-                var child = Diff(left[index], right[index]);
-                if(child != null)
-                {
-                    result[$"{index}"] = child;
-                }
-                commonHead++;
-            }
+			// Find common head
+			while (commonHead < left.Count
+				   && commonHead < right.Count
+				   && itemMatch.Match(left[commonHead], commonHead, right[commonHead], commonHead))
+			{
+				var index = commonHead;
+				var child = Diff(left[index], right[index]);
+				if (child != null)
+				{
+					result[$"{index}"] = child;
+				}
+				commonHead++;
+			}
 
-            // Find common tail
-            while (commonTail + commonHead < left.Count
-                && commonTail + commonHead < right.Count
-                && itemMatch.Match(left[left.Count - 1 - commonTail], right[right.Count - 1 - commonTail]))
-            {
-                var index1 = left.Count - 1 - commonTail;
-                var index2 = right.Count - 1 - commonTail;
-                var child = Diff(left[index1], right[index2]);
-                if(child != null)
-                {
-                    result[$"{index2}"] = child;
-                }
-                commonTail++;
-            }
+			// Find common tail
+			while (commonTail + commonHead < left.Count
+			       && commonTail + commonHead < right.Count
+			       && itemMatch.Match(
+				       left[left.Count - 1 - commonTail], left.Count - 1 - commonTail,
+				       right[right.Count - 1 - commonTail], right.Count - 1 - commonTail))
+			{
+				var index1 = left.Count - 1 - commonTail;
+				var index2 = right.Count - 1 - commonTail;
+				var child = Diff(left[index1], right[index2]);
+				if (child != null)
+				{
+					result[$"{index2}"] = child;
+				}
+				commonTail++;
+			}
 
-            if (commonHead + commonTail == left.Count)
-            {
-                // Trivial case, a block (1 or more consecutive items) was added
-                for (int index = commonHead; index < right.Count - commonTail; ++index)
-                {
-                    result[$"{index}"] = new JArray(right[index]);
-                }
+			if (commonHead + commonTail == left.Count)
+			{
+				// Trivial case, a block (1 or more consecutive items) was added
+				for (int index = commonHead; index < right.Count - commonTail; ++index)
+				{
+					result[$"{index}"] = new JArray(right[index]);
+				}
 
-                return result;
-            }
-            if (commonHead + commonTail == right.Count)
-            {
-                // Trivial case, a block (1 or more consecutive items) was removed
-                for (int index = commonHead; index < left.Count - commonTail; ++index)
-                {
-                    if (result.ContainsKey(index.ToString()))
-                    {
-                        result.Remove(index.ToString());
-                    }
-                    result[$"_{index}"] = new JArray(left[index], 0, (int)DiffOperation.Deleted);
-                }
+				return result;
+			}
+			if (commonHead + commonTail == right.Count)
+			{
+				// Trivial case, a block (1 or more consecutive items) was removed
+				for (int index = commonHead; index < left.Count - commonTail; ++index)
+				{
+					if (result.ContainsKey(index.ToString()))
+					{
+						result.Remove(index.ToString());
+					}
+					result[$"_{index}"] = new JArray(left[index], 0, (int)DiffOperation.Deleted);
+				}
 
-                return result;
-            }
+				return result;
+			}
 
-            // Complex Diff, find the LCS (Longest Common Subsequence)
-            List<JToken> trimmedLeft = left.ToList().GetRange(commonHead, left.Count - commonTail - commonHead);
-            List<JToken> trimmedRight = right.ToList().GetRange(commonHead, right.Count - commonTail - commonHead);
-            Lcs lcs = Lcs.Get(trimmedLeft, trimmedRight, itemMatch);
+			// Complex Diff, find the LCS (Longest Common Subsequence)
+			List<JToken> trimmedLeft = left.ToList().GetRange(commonHead, left.Count - commonTail - commonHead);
+			List<JToken> trimmedRight = right.ToList().GetRange(commonHead, right.Count - commonTail - commonHead);
+			Lcs lcs = Lcs.Get(trimmedLeft, trimmedRight, itemMatch);
 
-            for (int index = commonHead; index < left.Count - commonTail; ++index)
-            {
-                if (lcs.Indices1.IndexOf(index - commonHead) < 0)
-                {
-                    // Removed
-                    if (result.ContainsKey(index.ToString()))
-                    {
-                        result.Remove(index.ToString());
-                    }
-                    result[$"_{index}"] = new JArray(left[index], 0, (int)DiffOperation.Deleted);
-                }
-            }
+			for (int index = commonHead; index < left.Count - commonTail; ++index)
+			{
+				if (lcs.Indices1.IndexOf(index - commonHead) < 0)
+				{
+					// Removed
+					if (result.ContainsKey(index.ToString()))
+					{
+						result.Remove(index.ToString());
+					}
+					result[$"_{index}"] = new JArray(left[index], 0, (int)DiffOperation.Deleted);
+				}
+			}
 
-            for (int index = commonHead; index < right.Count - commonTail; index++)
-            {
-                int indexRight = lcs.Indices2.IndexOf(index - commonHead);
+			for (int index = commonHead; index < right.Count - commonTail; index++)
+			{
+				int indexRight = lcs.Indices2.IndexOf(index - commonHead);
 
-                if (indexRight < 0)
-                {
-                    // Added
-                    result[$"{index}"] = new JArray(right[index]);
-                }
-                else
-                {
-                    int li = lcs.Indices1[indexRight] + commonHead;
-                    int ri = lcs.Indices2[indexRight] + commonHead;
+				if (indexRight < 0)
+				{
+					// Added
+					result[$"{index}"] = new JArray(right[index]);
+				}
+				else
+				{
+					int li = lcs.Indices1[indexRight] + commonHead;
+					int ri = lcs.Indices2[indexRight] + commonHead;
 
-                    JToken diff = Diff(left[li], right[ri]);
+					JToken diff = Diff(left[li], right[ri]);
 
-                    if (diff != null)
-                    {
-                        result[$"{index}"] = diff;
-                    }
-                }
-            }
+					if (diff != null)
+					{
+						result[$"{index}"] = diff;
+					}
+				}
+			}
 
-            return result;
-        }
+			return result;
+		}
 
 		private JObject ObjectPatch(JObject obj, JObject patch)
 		{
