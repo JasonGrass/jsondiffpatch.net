@@ -7,10 +7,9 @@ build:
   stage: build
   script:
     - "chcp 65001" # 这里的 chcp 65001 是支持中文 UTF-8 解决命令行输出，默认将会使用 GBK 编码因此输出 UTF-8 将会乱码
-    - "dotnet build -c release Src\JsonDiffPatchDotNet.sln" # 请注意以下命令行都相对于 .git 文件夹所在文件夹
+    - 'dotnet build -c release Src\JsonDiffPatchDotNet.sln' # 请注意以下命令行都相对于 .git 文件夹所在文件夹
     - "cd Src"
     - "dotnet test -c release --no-build"
-
   except:
     - tags
 
@@ -19,7 +18,7 @@ tagpublish:
   script:
     - "chcp 65001"
     - "dotnet TagToVersion -t $CI_COMMIT_TAG"
-    - "dotnet build -c release Src\JsonDiffPatchDotNet.sln"
+    - 'dotnet build -c release Src\JsonDiffPatchDotNet.sln'
     - 'nuget push bin\Release\*.nupkg -Source Origin -SkipDuplicate -ApiKey $NuGetKey'
     # 请将 bin\Release\*.nupkg 替换为实际项目的路径，请在本地仓库 .git 文件夹所在文件夹用上面命令行编译，查看上面命令行执行之后的输出文件
     - 'nuget push bin\Release\*.nupkg -Source http://fastnugetserver.test.seewo.com/v3/index.json -SkipDuplicate' # 这里的 fastnugetserver 是为了提升性能，推送上去就可以使用，不需要和 nex 一样等待缓存
