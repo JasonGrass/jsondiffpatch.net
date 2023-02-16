@@ -1,0 +1,14 @@
+<Project>
+  <Import Project="build\Version.props" />
+  <PropertyGroup>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)</PackageOutputPath>
+    <RepositoryUrl>https://gitlab.gz.cvte.cn/iip-win/jsondiffpatch.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <LangVersion>latest</LangVersion>
+    <PackageProjectUrl>https://gitlab.gz.cvte.cn/iip-win/jsondiffpatch.net</PackageProjectUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- Include symbol files (*.pdb) in the built .nupkg -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+</Project>

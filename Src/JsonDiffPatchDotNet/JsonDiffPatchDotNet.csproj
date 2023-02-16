@@ -5,24 +5,17 @@
     <LangVersion>latest</LangVersion>
     <RootNamespace>JsonDiffPatchDotNet</RootNamespace>
     <AssemblyName>JsonDiffPatchDotNet</AssemblyName>
-    <AssemblyVersion>2.4.0.0</AssemblyVersion>
-    <FileVersion>2.4.0.0</FileVersion>
     <SignAssembly>true</SignAssembly>
-    <RepositoryUrl>https://github.com/wbish/jsondiffpatch.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Authors>William Bishop</Authors>
     <Title>JsonDiffPatch.Net</Title>
     <Copyright>Copyright © William Bishop 2017</Copyright>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/wbish/jsondiffpatch.net/master/LICENSE</PackageLicenseUrl>
     <Description>JSON object diffs and reversible patching</Description>
-    <PackageId>JsonDiffPatch.Net</PackageId>
+    <PackageId>JsonDiffPatch.Net.Local</PackageId>
     <PackageTags>json diff patch unpatch</PackageTags>
-    <PackageProjectUrl>https://github.com/wbish/jsondiffpatch.net</PackageProjectUrl>
-    <AssemblyOriginatorKeyFile>JsonDiffPatchDotNet.snk</AssemblyOriginatorKeyFile>
     <MinClientVersion>2.12</MinClientVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.4.0-alpha01</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
