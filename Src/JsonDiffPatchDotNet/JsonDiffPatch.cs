@@ -29,7 +29,7 @@ namespace JsonDiffPatchDotNet
 
 		/// <summary>
 		/// Diff two JSON objects.
-		/// 
+		///
 		/// The output is a JObject that contains enough information to represent the
 		/// delta between the two objects and to be able perform patch and reverse operations.
 		/// </summary>
@@ -68,13 +68,15 @@ namespace JsonDiffPatchDotNet
 				var dmp = new diff_match_patch();
 				List<Patch> patches = dmp.patch_make(left.ToObject<string>(), right.ToObject<string>());
 				return patches.Any()
-					? new JArray(dmp.patch_toText(patches), 0, (int)DiffOperation.TextDiff)
-				: null;
+						? new JArray(dmp.patch_toText(patches), 0, (int)DiffOperation.TextDiff)
+						: null;
 			}
 
 			if (!JToken.DeepEquals(left, right))
 			{
-				return new JArray(left, right);
+				// 不在 patch 中记录旧数据（不考虑撤销操作）
+				// return new JArray(left, right);
+				return new JArray(new JObject(), right);
 			}
 
 			return null;
@@ -280,7 +282,7 @@ namespace JsonDiffPatchDotNet
 
 		/// <summary>
 		/// Diff two JSON objects.
-		/// 
+		///
 		/// The output is a JObject that contains enough information to represent the
 		/// delta between the two objects and to be able perform patch and reverse operations.
 		/// </summary>
@@ -360,7 +362,7 @@ namespace JsonDiffPatchDotNet
 				}
 			}
 
-			// Find properties that were added 
+			// Find properties that were added
 			foreach (var rp in right.Properties())
 			{
 				if (left.Property(rp.Name) != null || (_options.DiffBehaviors & DiffBehavior.IgnoreNewProperties) == DiffBehavior.IgnoreNewProperties)
@@ -370,7 +372,9 @@ namespace JsonDiffPatchDotNet
 			}
 
 			if (diffPatch.Properties().Any())
+			{
 				return diffPatch;
+			}
 
 			return null;
 		}
@@ -385,7 +389,9 @@ namespace JsonDiffPatchDotNet
 			int commonTail = 0;
 
 			if (JToken.DeepEquals(left, right))
+			{
 				return null;
+			}
 
 			var childContext = new List<JToken>();
 
@@ -405,10 +411,10 @@ namespace JsonDiffPatchDotNet
 
 			// Find common tail
 			while (commonTail + commonHead < left.Count
-			       && commonTail + commonHead < right.Count
-			       && itemMatch.Match(
-				       left[left.Count - 1 - commonTail], left.Count - 1 - commonTail,
-				       right[right.Count - 1 - commonTail], right.Count - 1 - commonTail))
+				   && commonTail + commonHead < right.Count
+				   && itemMatch.Match(
+					   left[left.Count - 1 - commonTail], left.Count - 1 - commonTail,
+					   right[right.Count - 1 - commonTail], right.Count - 1 - commonTail))
 			{
 				var index1 = left.Count - 1 - commonTail;
 				var index2 = right.Count - 1 - commonTail;
