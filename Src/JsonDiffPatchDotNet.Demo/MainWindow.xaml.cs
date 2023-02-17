@@ -61,11 +61,7 @@ namespace JsonDiffPatchDotNet.Demo
 			}
 			catch (Exception ex)
 			{
-				DiffResultTextBox.Text =
-					$"""
-					发生异常
-					{ex.Message}
-					""";
+				DiffResultTextBox.Text = $"发生异常\r\n{ex.Message}";
 			}
 		}
 
