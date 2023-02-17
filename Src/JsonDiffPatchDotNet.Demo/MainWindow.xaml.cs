@@ -34,7 +34,30 @@ namespace JsonDiffPatchDotNet.Demo
 		{
 			try
 			{
-				DiffResultTextBox.Text = Diff();
+				var left = LeftJsonTextBox.Text;
+				var right = RightJsonTextBox.Text;
+
+				if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right))
+				{
+					return;
+				}
+
+				var diffHandler = new DiffHandler();
+				var patch = diffHandler.Diff(left, right);
+				DiffResultTextBox.Text = patch;
+				var rightOfPatch = diffHandler.Patch(left, patch);
+
+				RecoverResultTextBox.Text= rightOfPatch;
+
+				if (right != rightOfPatch)
+				{
+					RecoverResultTextBox.Background = Brushes.LightCoral;
+				}
+				else
+				{
+					RecoverResultTextBox.Background = null;
+				}
+
 			}
 			catch (Exception ex)
 			{
@@ -59,89 +82,16 @@ namespace JsonDiffPatchDotNet.Demo
 
 		private void LeftFormatButton_OnClick(object sender, RoutedEventArgs e)
 		{
-			LeftJsonTextBox.Text = FormatJsonString(LeftJsonTextBox.Text);
+			LeftJsonTextBox.Text = Utils.FormatJsonString(LeftJsonTextBox.Text);
 		}
 
 		private void RightFormatButton_OnClick(object sender, RoutedEventArgs e)
 		{
-			RightJsonTextBox.Text = FormatJsonString(RightJsonTextBox.Text);
+			RightJsonTextBox.Text = Utils.FormatJsonString(RightJsonTextBox.Text);
 		}
 
-		private string Diff()
-		{
-			var left = LeftJsonTextBox.Text;
-			var right = RightJsonTextBox.Text;
+		
 
-			var jdp = new JsonDiffPatch(new Options()
-			{
-				ArrayDiff = ArrayDiffMode.Efficient,
-				ObjectHash = (obj, index) =>
-				{
-					var objString = obj.ToString(Formatting.Indented); // for debug view
-					return $"$$index{index}";
-
-					////var id = obj["Id"]?.Value<string>();
-					////if (!string.IsNullOrWhiteSpace(id))
-					////{
-					////    return id;
-					////}
-					////else
-					////{
-					////    return $"$$index{index}";
-					////}
-				}
-			});
-
-			var leftToken = JToken.Parse(left);
-			var rightToken = JToken.Parse(right);
-
-			JToken? patch = jdp.Diff(leftToken, rightToken);
-
-			if (patch == null)
-			{
-				return "";
-			}
-
-			return patch.ToString(Formatting.Indented);
-		}
-
-		/// <summary>
-		/// 格式化 json 字符串
-		/// </summary>
-		public static string FormatJsonString(string jsonString)
-		{
-			if (jsonString == null || string.IsNullOrWhiteSpace(jsonString))
-			{
-				return "";
-			}
-
-			var result = jsonString;
-			try
-			{
-				JsonSerializer jsonSerializer = new JsonSerializer();
-				using TextReader textReader = new StringReader(jsonString);
-				using JsonTextReader jsonTextReader = new JsonTextReader(textReader);
-				object? obj = jsonSerializer.Deserialize(jsonTextReader);
-				if (obj != null)
-				{
-					using StringWriter textWriter = new StringWriter();
-					using JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)
-					{
-						Formatting = Formatting.Indented,
-						Indentation = 2,
-						IndentChar = ' '
-					};
-					jsonSerializer.Serialize(jsonWriter, obj);
-					result = textWriter.ToString();
-				}
-				return result;
-			}
-			catch (Exception)
-			{
-				return jsonString;
-			}
-
-		}
 
 	}
 }

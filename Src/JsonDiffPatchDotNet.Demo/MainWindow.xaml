@@ -71,13 +71,26 @@
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
-			<TextBlock Grid.Row="0" FontSize="18" Margin="0 5">Delta</TextBlock>
-			<TextBox Grid.Row="1" TextWrapping="Wrap" x:Name="DiffResultTextBox"
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+			<TextBlock Grid.Row="0" Grid.Column="0" FontSize="18" Margin="0 5">Delta</TextBlock>
+			<TextBox Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" x:Name="DiffResultTextBox"
 			         AcceptsReturn="True" AcceptsTab="True"
 			         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
 			         IsReadOnly="True">
 
 			</TextBox>
+
+			<TextBlock Grid.Row="0" Grid.Column="1" FontSize="18" Margin="0 5">recover right.json</TextBlock>
+			<TextBox Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" x:Name="RecoverResultTextBox"
+			         AcceptsReturn="True" AcceptsTab="True"
+			         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+			         IsReadOnly="True">
+
+			</TextBox>
+
 		</Grid>
 
 	</Grid>
