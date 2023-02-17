@@ -1,0 +1,83 @@
+<Window x:Class="JsonDiffPatchDotNet.Demo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:JsonDiffPatchDotNet.Demo"
+        mc:Ignorable="d"
+        Title="JsonDiffPatch" Height="700" Width="1200" WindowStartupLocation="CenterScreen">
+
+	<Grid>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
+		<StackPanel Grid.Row="0" Orientation="Vertical" Margin="5">
+
+			<TextBlock FontSize="24" FontWeight="Bold">JsonDiffPatch</TextBlock>
+
+			<!-- 工具栏 -->
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+				<Button Width="50" Margin="10 0" Click="SwapButton_OnClick">Swap</Button>
+				<Button Width="50" Margin="10 0" Click="ClearButton_OnClick">Clear</Button>
+			</StackPanel>
+
+			<!-- json -->
+			<Grid Margin="0 5" Height="300">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+
+				<StackPanel Grid.Row="0" Grid.Column="0"
+				            HorizontalAlignment="Center"
+				            Margin="0 5" Orientation="Horizontal">
+					<TextBlock FontSize="18">left.json</TextBlock>
+					<Button FontSize="18" Width="50" Margin="10 0" Click="LeftFormatButton_OnClick">{}</Button>
+				</StackPanel>
+
+				<StackPanel Grid.Row="0" Grid.Column="1"
+				            HorizontalAlignment="Center"
+				            Margin="0 5" Orientation="Horizontal">
+					<TextBlock FontSize="18">right.json</TextBlock>
+					<Button FontSize="18" Width="50" Margin="10 0" Click="RightFormatButton_OnClick">{}</Button>
+				</StackPanel>
+
+				<TextBox Grid.Row="1" Grid.Column="0" TextWrapping="Wrap"
+						 x:Name="LeftJsonTextBox"
+				         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+				</TextBox>
+
+				<TextBox Grid.Row="1" Grid.Column="1" TextWrapping="Wrap"
+						 x:Name="RightJsonTextBox"
+				         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+				</TextBox>
+
+			</Grid>
+
+		</StackPanel>
+
+		<!-- diff 结果 -->
+		<Grid Grid.Row="1" Margin="5 0 5 5">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<TextBlock Grid.Row="0" FontSize="18" Margin="0 5">Delta</TextBlock>
+			<TextBox Grid.Row="1" TextWrapping="Wrap" x:Name="DiffResultTextBox"
+			         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+			</TextBox>
+		</Grid>
+
+	</Grid>
+
+</Window>
