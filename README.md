@@ -5,6 +5,14 @@ fork 自 [wbish/jsondiffpatch.net: JSON object diffs and reversible patching (js
 对应的前端项目：
 [benjamine/jsondiffpatch: Diff & patch JavaScript objects](https://github.com/benjamine/jsondiffpatch )
 
+## 内部 NUGET 包
+
+JsonDiffPatch.Net.Local
+
+`<PackageReference Include="JsonDiffPatch.Net.Local" Version="2.4.0-alpha02" />`
+
+打包方式：推 tag 打包
+
 ## 修改点
 
 ### 1 让数组的列表 Item 项的对比，支持 Index 参数
